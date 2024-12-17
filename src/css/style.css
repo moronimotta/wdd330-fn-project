@@ -1,0 +1,552 @@
+/* General styles */
+
+/* TODO:
+fix some layout error
+mobile layout check
+*/
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #14171C;
+  color: white;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #2C343F;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+ /* General link styling */
+ a {
+  text-decoration: none; /* Remove underline */
+  color: #007BFF; /* Set base link color */
+  font-family: Arial, sans-serif; /* Use a clean font */
+  font-weight: bold; /* Make text bold */
+  padding: 8px 12px; /* Add some padding */
+  border: 2px solid transparent; /* Invisible border for consistency */
+  border-radius: 5px; /* Add rounded corners */
+  transition: all 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover effect */
+a:hover {
+  color: white; /* Change text color on hover */
+  background-color: #007BFF; /* Add a background color */
+  border-color: #007BFF; /* Set border color */
+}
+
+/* Active (when clicking) */
+a:active {
+  background-color: #0056b3; /* Darker background when active */
+}
+
+/* Visited link */
+a:visited {
+  color: #0056b3; /* Slightly darker blue for visited links */
+}
+
+
+.logo svg {
+  width: 48px;
+  height: 48px;
+  fill: #00B021;
+}
+
+nav .login-logout {
+  background-color: #00B021;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Full-width Section */
+.next-meal-section {
+  background-color: #00B021;
+  color: white;
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.next-meal-section h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+/* Main content styles */
+main .content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  justify-items: center;
+}
+
+#app-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  background-color: #00B021;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+button {
+ 
+  background-color: #2C343F;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+button:hover {
+  transform: scale(1.1);
+  background-color: #00B021;
+}
+
+button svg {
+  width: 48px;
+  height: 48px;
+  fill: white;
+}
+
+button p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+}
+
+.card {
+  width: 18rem;
+  border: 1px solid #556678;
+  border-radius: 10px;
+  background-color: #2C343F;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-img-top {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.card-body {
+  padding: 1rem;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.card-text {
+  margin: 0.5rem 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #00B021;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #F27405;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #2C343F;
+  margin-top: auto;
+}
+
+
+/* Profile Page Layout */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+}
+.macronutrient-info {
+  background-color: #2C343F;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.macronutrient-info h3 {
+  margin-bottom: 1rem;
+  color: #00B021;
+}
+
+.macronutrient-info p {
+  margin-bottom: 0.5rem;
+}
+
+.notes-info {
+  background-color: #2C343F;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.notes-info h3 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #00B021;
+}
+
+.notes-info p {
+  margin-bottom: 0.5rem;
+}
+
+
+
+.profile-column {
+  background-color: #2C343F;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.profile-column h3 {
+  margin-bottom: 1rem;
+  color: #00B021;
+}
+
+.profile-column form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-column label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #B0B0B0;
+}
+
+.profile-column input,
+.profile-column select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #556678;
+  border-radius: 5px;
+  background-color: #14171C;
+  color: white;
+}
+
+.profile-column input:focus,
+.profile-column select:focus {
+  border-color: #00B021;
+  outline: none;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+#response {
+  opacity: 0; /* Start hidden */
+  transition: opacity 0.5s ease; /* Smooth fade-in */
+}
+
+.response-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2C343F;
+  border: 1px solid #556678;
+  margin: 1rem;
+  border-radius: 5px;
+}
+
+
+/* Form Styling */
+.content {
+  max-width: 400px;
+  margin: 2rem auto;
+  background-color: #2C343F;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #00B021;
+  font-size: 1.8rem;
+}
+
+.register-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #B0B0B0;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #556678;
+  border-radius: 5px;
+  background-color: #1C2026;
+  color: white;
+  font-size: 1rem;
+}
+
+.register-form input:focus {
+  outline: none;
+  border-color: #00B021;
+}
+
+.form-submit {
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  background-color: #00B021;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.form-submit:hover {
+  background-color: #028A17;
+}
+
+/* Login-specific styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.register-link a {
+  color: #00B021;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link a:hover {
+  color: #F27405;
+  text-decoration: underline;
+}
+
+
+/* Meal Plan Page */
+.meal-tables {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 2rem;
+}
+
+.table-wrapper {
+  background-color: #2C343F;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.table-wrapper h3 {
+  margin-bottom: 1rem;
+  color: #00B021;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #556678;
+}
+
+input[type="text"],
+input[type="time"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #556678;
+  border-radius: 5px;
+  background-color: #1C2026;
+  color: white;
+}
+
+.add-row {
+  background-color: #00B021;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-row {
+  background-color: #F27405;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-row:hover {
+  background-color: #D9534F;
+}
+
+.add-row:hover {
+  background-color: #028A17;
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  padding: 10px;
+  margin: 1rem;
+  background-color: #2C343F;
+  border-radius: 10px;
+}
+
+.search-select {
+  padding: 0.5rem;
+  background-color: #1C2026;
+  color: white;
+  border: 1px solid #556678;
+  border-radius: 5px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: #1C2026;
+  color: white;
+  border: 1px solid #556678;
+  border-radius: 5px;
+}
+
+.search-bar .btn {
+  padding: 0.5rem 1rem;
+  background-color: #00B021;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.search-bar .btn:hover {
+  background-color: #F27405;
+}
+
+section #content {
+  width: 100%;
+  gap: 1.5rem;
+  padding: 10px;
+  justify-items: center;
+}
+
+/* Column for buttons */
+.button-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Styling for the Daily Motivation card */
+.daily-motivation {
+  flex: 1;
+  align-self: flex-start;
+  max-width: 300px; 
+  height: 100%;
+  padding: 70px;
+}
+
+/* Profile and Edit My Meal button styles */
+.profile-card,
+.meal-card {
+  font-size: 18px; /* Bigger font for buttons */
+  padding: 20px 30px; /* Add padding for larger buttons */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.profile-card:hover,
+.meal-card:hover {
+  background-color: #0056b3;
+}
+
+/* SVG Icon styles */
+.profile-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.content-main-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 20px;
+}

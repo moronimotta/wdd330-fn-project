@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Page</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="../js/quotes.js" type="module"></script>
+
+</head>
+
+<body>
+  <header>
+    <div class="logo"><img src="./public/images/meal-svgrepo-com.svg"> </div>
+    <nav>
+      <button class="login-logout">Login/Logout</button>
+    </nav>
+  </header>
+  <main>
+    <section class="content-main-page">
+      <div class="button-column">
+        <button class="profile-card" id="app-button" onclick="window.location.href='profile/index.html'">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="profile-icon">
+            <circle cx="12" cy="8" r="4" fill="white"></circle>
+            <path d="M2 20c0-4.42 3.58-8 8-8h4c4.42 0 8 3.58 8 8v1H2v-1z" fill="white"></path>
+          </svg>
+          <p>Profile</p>
+        </button>
+
+        <button class="meal-card" id="app-button" onclick="window.location.href='meal-plan/index.html'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+            <path
+              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5" />
+            <path
+              d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" />
+          </svg>
+          <p>Edit My Meal</p>
+        </button>
+      </div>
+
+      <div class="card daily-motivation">
+        <div class="card-body">
+          <h5 class="card-title">Daily Motivation</h5>
+          <p class="card-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="next-meal-section">
+      <h2>Objective</h2>
+      <p>The goal of the meal planner is to help you organize your meals, ensure balanced nutrition, and save time by planning ahead. It allows you to create, edit, and manage your meal plans efficiently.</p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2024 Your Company</p>
+  </footer>
+</body>
+
+</html>
