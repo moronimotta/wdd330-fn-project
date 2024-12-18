@@ -1,3 +1,5 @@
+import Authentication from "./Authentication.mjs";
+
 export function renderListWithTemplate(templateFn, parentElement, list, position = "afterbegin", clear = false) {
   const htmlStrings = list.map(templateFn);
   // if clear is true we need to clear out the contents of the parent.
@@ -17,7 +19,7 @@ export function renderWithTemplate(template, parentElement, data, callback) {
 export function formatExpiration(event) {
   let input = event.target.value;
   input = input.replace(/\D/g, "");
-  
+
   if (input.length > 2) {
     input = input.slice(0, 2) + '/' + input.slice(2);
   }
@@ -41,6 +43,32 @@ export async function loadHeaderFooter() {
   await renderWithTemplate(footerTemplate, footerElement);
 }
 
+export function loadBtnAccount(){
+  const navElement = document.querySelector("nav");
+  const auth = new Authentication();
+  const ok = auth.isAuthenticated();
+  
+  if (!ok) {
+      const loginButton = document.createElement("button");
+      loginButton.textContent = "Login";
+      loginButton.classList.add("login-logout");
+      loginButton.addEventListener("click", () => {
+        window.location.href = "/authentication/login.html";
+      }
+      );
+      navElement.appendChild(loginButton);
+    } else {
+      const logoutButton = document.createElement("button");
+      logoutButton.textContent = "Logout";
+      logoutButton.classList.add("login-logout");
+      logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("userAccount");
+        window.location.href = "/index.html";
+      });
+      navElement.appendChild(logoutButton);
+    }
+}
+
 // retrieve data from localstorage
 export default function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key));
@@ -49,11 +77,6 @@ export default function getLocalStorage(key) {
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
-
-// TODO: footer and header
-// if is authenticated show logout button
-// if not show login and register buttons
-
 
 export async function getRandomQuote() {
   try {

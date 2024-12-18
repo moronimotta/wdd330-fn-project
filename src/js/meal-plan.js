@@ -1,38 +1,35 @@
-
-// make a request to get the meal plan
-// populate if the meal plan is available
-
-
-// create a div for the response that will fade in when the response is received
 import { promptSender } from "./GoogleAi.mjs";
 import Authentication from "./Authentication.mjs";
+const baseURL = import.meta.env.VITE_SERVER_URL;
+import getLocalStorage from "./utils.mjs";
+import { loadHeaderFooter, loadBtnAccount } from "./utils.mjs";
 
 
-// DOM fully loaded
+
+
 document.addEventListener("DOMContentLoaded", () => {
-
   const auth = new Authentication();
   const ok = auth.isAuthenticated();
 
   if (!ok) {
     window.location.href = "/authentication/login";
   }
+  loadHeaderFooter().then(() => {
+    loadBtnAccount();
+});
 
-
+  const mealPlanSubmitBtn = document.getElementById("meal-plan-submit");
+  mealPlanSubmitBtn.addEventListener("click", submitMealPlan);
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const mealTablesContainer = document.querySelector(".meal-tables");
 
   const copyBtn = document.getElementById("response-copy-btn");
 
-  const addNoteBtn = document.getElementById("add-note-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", copyToClipboard);
+  }
 
-  copyBtn.addEventListener("click", copyToClipboard);
-
-  addNoteBtn.addEventListener("click", saveQuickNote);
-
-
-  // Dynamically generate tables for each day
   daysOfWeek.forEach(day => {
     const tableHTML = `
       <div class="table-wrapper" id="${day.toLowerCase()}">
@@ -61,6 +58,39 @@ document.addEventListener("DOMContentLoaded", () => {
     mealTablesContainer.insertAdjacentHTML("beforeend", tableHTML);
   });
 
+
+
+  mealTablesContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("add-row")) {
+      e.preventDefault();
+      const tableBody = e.target.closest("table").querySelector("tbody");
+
+      const newRowHTML = `
+        <tr>
+          <td><input type="text" placeholder="Enter meal"></td>
+          <td><input type="time"></td>
+          <td>
+            <button class="add-row">+</button>
+            <button class="delete-row">-</button>
+          </td>
+        </tr>
+      `;
+
+      tableBody.insertAdjacentHTML("beforeend", newRowHTML);
+    } else if (e.target.classList.contains("delete-row")) {
+      e.preventDefault();
+      const tableBody = e.target.closest("tbody");
+      const rows = tableBody.querySelectorAll("tr");
+
+      if (rows.length > 1) {
+        const row = e.target.closest("tr");
+        row.remove();
+      } else {
+        alert("You need to have at least one row");
+      }
+    }
+  });
+
   const searchButton = document.getElementById("prompt-btn");
   if (searchButton) {
     searchButton.addEventListener("click", async (e) => {
@@ -75,42 +105,72 @@ document.addEventListener("DOMContentLoaded", () => {
           renderResponse(type, response); // Pass the type and formatted response
         }
       } catch (error) {
-        console.error("Error fetching response:", error);
+        alert("Error fetching response:", error);
       }
     });
   }
 });
 
-// TODO: Implement the saveQuickNote function
-function saveQuickNote() {
-  const note = document.getElementById("quick-note").value;
-  localStorage.setItem("quick-note", note);
+fetchMealPlan();
+
+async function submitMealPlan() {
+  const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const mealPlan = {};
+
+  days.forEach(day => {
+    const dayMeals = document.getElementById(day).querySelectorAll("tbody tr");
+    mealPlan[day] = [];
+
+    dayMeals.forEach(row => {
+      const meal = row.querySelector("input[type='text']").value;
+      const time = row.querySelector("input[type='time']").value;
+
+      if (meal && time) {
+        mealPlan[day].push({ meal, time });
+      }
+    });
+  });
+
+  const userAccount = getLocalStorage("userAccount");
+
+  const input = {
+    user_id: userAccount.id,
+    ...mealPlan
+  };
+  try {
+    const response = await fetch(`${baseURL}/meal-plans`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(input),
+    });
+    if (response.ok) {
+      alert("Meal plan submitted successfully!");
+    } else {
+      const error = await response.json();
+      alert("Failed to submit meal plan: " + error.error);
+    }
+  } catch (error) {
+    alert("Error submitting meal plan:", error);
+  }
 }
 
 function copyToClipboard() {
-  // Get the response div
   const responseDiv = document.getElementById("response");
 
   if (responseDiv) {
-    // Get the inner text of the response div
     const textToCopy = responseDiv.innerText;
 
-    // Use the Clipboard API to copy the text
     navigator.clipboard.writeText(textToCopy)
-      .then(() => {
-        // Notify the user
-        alert("Copied the text: " + textToCopy);
-      })
       .catch(err => {
-        console.error("Failed to copy text: ", err);
-        alert("Failed to copy text.");
+        alert("Failed to copy text: ", err);
       });
   } else {
     alert("No response available to copy.");
   }
 }
 
-// Render the response dynamically into the div
 function renderResponse(type, data) {
   const responseContainer = document.querySelector(".response-container");
   const responseDiv = document.querySelector("#response") || createResponseDiv(responseContainer);
@@ -132,18 +192,6 @@ function renderResponse(type, data) {
       <p><strong>Fat:</strong> ${data.fat}</p>
       <p><strong>Carbs:</strong> ${data.carb}</p>
     `;
-  } else if (type === "macronutrient") {
-    responseDiv.innerHTML = `
-      <h4>Daily Macronutrient Needs</h4>
-      <p><strong>Sex:</strong> ${data.sex}</p>
-      <p><strong>Height:</strong> ${data.height} cm</p>
-      <p><strong>Weight:</strong> ${data.weight} kg</p>
-      <p><strong>Age:</strong> ${data.age} years</p>
-      <p><strong>Goal:</strong> ${data.goal}</p>
-      <p><strong>Daily Protein:</strong> ${data.dailyMacronutrientBreakdown.protein}g</p>
-      <p><strong>Daily Fat:</strong> ${data.dailyMacronutrientBreakdown.fat}g</p>
-      <p><strong>Daily Carbs:</strong> ${data.dailyMacronutrientBreakdown.carbs}g</p>
-    `;
   } else {
     responseDiv.innerHTML = `<p>Unknown response type</p>`;
   }
@@ -161,33 +209,62 @@ function createResponseDiv(container) {
 }
 
 
-function formatMealPlan(mealPlan) {
-  const formattedMealPlan = {
-    user_id: mealPlan.user_id,
-    monday: [],
-    tuesday: [],
-    wednesday: [],
-    thursday: [],
-    friday: [],
-    saturday: [],
-    sunday: []
-  };
+async function fetchMealPlan() {
+  const userAccount = getLocalStorage("userAccount");
 
+  try {
+    const response = await fetch(`${baseURL}/meal-plans/user/${userAccount.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch meal plan");
+
+    const mealPlan = await response.json();
+    populateMealPlan(mealPlan.meal);
+  } catch (error) {
+    alert("Failed to fetch meal plan. Please try again later.");
+  }
+}
+
+
+function populateMealPlan(mealPlan) {
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
   days.forEach(day => {
-    const dayElement = document.getElementById(day);
-    const rows = dayElement.querySelectorAll("tbody tr");
+    const tableBody = document.getElementById(day)?.querySelector("tbody");
+    if (tableBody) {
+      tableBody.innerHTML = ""; // Clear existing rows
+      const dailyMeals = mealPlan[day] || {}; // Use the data from the response or default to empty object
 
-    rows.forEach(row => {
-      const meal = row.querySelector("input[type='text']").value;
-      const time = row.querySelector("input[type='time']").value;
+      dailyMeals.forEach(({ meal, time }) => {
+        const newRowHTML = `
+          <tr>
+        <td><input type="text" placeholder="Enter meal" value="${meal}"></td>
+        <td><input type="time" value="${time}"></td>
+        <td>
+          <button class="add-row">+</button>
+          <button class="delete-row">-</button>
+        </td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML("beforeend", newRowHTML);
+      });
 
-      if (meal && time) {
-        formattedMealPlan[day].push({ meal, time });
+      if (dailyMeals.length === 0) {
+        const emptyRowHTML = `
+          <tr>
+        <td><input type="text" placeholder="Enter meal"></td>
+        <td><input type="time"></td>
+        <td>
+          <button class="add-row">+</button>
+          <button class="delete-row">-</button>
+        </td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML("beforeend", emptyRowHTML);
       }
-    });
+    }
   });
-
-  return formattedMealPlan;
 }

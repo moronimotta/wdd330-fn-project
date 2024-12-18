@@ -3,7 +3,6 @@ import {setLocalStorage} from "./utils.mjs";
 import getLocalStorage from "./utils.mjs";
 
 export default class Authentication {
-   
     async register(userData) {
       try {
           const response = await fetch(baseURL + "/users", {
@@ -21,6 +20,7 @@ export default class Authentication {
           const userAccount = {
             name: result.user.name,
             email: result.user.email,
+            id: result.user.id.replace(/^ObjectID\("(.*)"\)$/, '$1'),
           };
       
           setLocalStorage("userAccount", userAccount);
@@ -32,6 +32,7 @@ export default class Authentication {
           }
         } catch (error) {
           console.error("Error during registration:", error);
+          console.log(error);
           alert("An unexpected error occurred. Please try again later.");
         }
     }
@@ -50,6 +51,7 @@ export default class Authentication {
         const userAccount = {
         name: user.user.name,
         email: user.user.email,
+        id: user.user.id.replace(/^ObjectID\("(.*)"\)$/, '$1'),
         };
         setLocalStorage("userAccount", userAccount);
         

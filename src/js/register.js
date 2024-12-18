@@ -1,7 +1,13 @@
 import Authentication from "./Authentication.mjs";
+import { loadHeaderFooter } from "./utils.mjs";
+import loadBtnAccount from "./utils.mjs";
 
 window.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.querySelector(".register-form");
+
+  loadHeaderFooter().then(() => {
+          loadBtnAccount();
+      });
 
   registerForm.addEventListener("submit", async (event) => {
     event.preventDefault(); // Prevent default form submission

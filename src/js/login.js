@@ -1,6 +1,13 @@
 import Authentication from "./Authentication.mjs";
+import { loadHeaderFooter, loadBtnAccount } from "./utils.mjs";
+
+
 
 window.addEventListener("DOMContentLoaded", () => {
+
+ loadHeaderFooter().then(() => {
+         loadBtnAccount();
+     });
   if (localStorage.getItem("userAccount")) {
     window.location.href = "/profile/index.html";
   }
@@ -18,9 +25,9 @@ window.addEventListener("DOMContentLoaded", () => {
       alert("Please fill in all fields.");
       return;
     }
-  
+
     const auth = new Authentication();
     auth.login(email, password);
-    
+
   });
 });

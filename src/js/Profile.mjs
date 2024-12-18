@@ -1,10 +1,7 @@
-import { setLocalStorage } from "./utils.mjs";
-import getLocalStorage from "./utils.mjs";
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
 export default class Profile {
-    constructor(name, email) {
-        this.name = name;
+    constructor(email) {
         this.email = email;
     }
 
@@ -14,34 +11,11 @@ export default class Profile {
 
         submitProfileBtn.addEventListener("click", () => this.submitForm());
         submitNoteBtn.addEventListener("click", () => this.submitForm());
- 
+
         const userAccount = await this.getData(this.email);
 
         this.fillInputs(userAccount.user);
 
-        // try {
-        //     const url = `${baseURL}/meal-plans/user/${this.id}`;
-        //     const response = await fetch(url, {
-        //         method: "GET",
-        //     });
-
-        //     if (response.ok) {
-        //         // Parse the JSON response
-        //         const meals = await response.json();
-
-        //         this.nextMeal(meals);
-        //         console.log("Meals retrieved:", meals);
-        //     } else {
-        //         // Handle errors
-        //         const error = await response.json();
-        //         console.error("Error fetching meals:", error.error);
-        //         throw new Error(error.error);
-        //     }
-        // }
-        // catch (error) {
-        //     console.error("Error during login:", error);
-        //     alert("An unexpected error occurred. Please try again later.");
-        // }
     }
 
     async submitForm() {
@@ -59,7 +33,7 @@ export default class Profile {
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirm-password");
 
-        if(passwordInput.value !== "" &&  confirmPasswordInput.value !== "") {
+        if (passwordInput.value !== "" && confirmPasswordInput.value !== "") {
             if (passwordInput.value !== confirmPasswordInput.value) {
                 alert("Passwords do not match.");
                 return;
