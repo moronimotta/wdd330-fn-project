@@ -107,9 +107,10 @@ export default class Profile {
                 }
 
                 alert("Update successful!");
-                location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             } else {
-                // Handle errors from the server
                 const errorMessage = result.error || "Failed to update user.";
                 alert("Update failed: " + errorMessage);
             }

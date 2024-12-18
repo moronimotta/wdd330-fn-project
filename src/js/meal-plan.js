@@ -111,7 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-fetchMealPlan();
+
+setTimeout(() => {
+  fetchMealPlan();
+}, 2000);
+
 
 async function submitMealPlan() {
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
@@ -147,6 +151,9 @@ async function submitMealPlan() {
     });
     if (response.ok) {
       alert("Meal plan submitted successfully!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } else {
       const error = await response.json();
       alert("Failed to submit meal plan: " + error.error);

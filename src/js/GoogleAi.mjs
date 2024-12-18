@@ -1,6 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Ensure the environment variable is prefixed with VITE_
 const apiKey = import.meta.env.VITE_GOOGLE_AI_API_KEY;
 
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -12,28 +10,24 @@ export async function promptSender(input_text, type) {
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    let text = await response.text(); // Await the response text
+    let text = await response.text(); 
     console.log("Raw API Response:", text);
 
-    // Sanitize the response:
     text = text
-      .replace(/```json/g, "") // Remove markdown code block indicators
+      .replace(/```json/g, "") 
       .replace(/```/g, "")
-      .replace(/\/\/.*$/gm, "") // Remove single-line comments
+      .replace(/\/\/.*$/gm, "")
       .trim();
 
     let jsonResponse;
     try {
-      // Parse the sanitized JSON string
       jsonResponse = JSON.parse(text);
     } catch (parseError) {
       throw new Error(`Failed to parse JSON: ${parseerror.error}`);
     }
 
-    // Format the parsed response
     const formattedResponse = formatResponse(type, jsonResponse);
     console.log("Formatted Response:", formattedResponse);
-    alert(JSON.stringify(formattedResponse, null, 2));
     return formattedResponse;
   } catch (error) {
     console.error("Error in promptSender:", error);
@@ -56,7 +50,6 @@ function promptType(input_text, type) {
   }
 }
 
-// Formats the response based on the prompt type
 function formatResponse(type, response) {
   switch (type) {
     case "recipe":
@@ -68,24 +61,23 @@ function formatResponse(type, response) {
   }
 }
 
-// Format functions for specific response types
 function formatRecipe(response) {
   return {
-    name: response.name,
-    ingredients: response.ingredients,
-    fats: response.fats,
-    carbs: response.carbs,
-    proteins: response.proteins,
-    preparation: response.preparation_text,
+    name: response.name || "",
+    ingredients: response.ingredients || "",
+    fats: response.fats || "",
+    carbs: response.carbs || "",
+    proteins: response.proteins || "",
+    preparation: response.preparation_text || "",
   };
 }
 
 function formatNutritionFacts(response) {
   return {
-    name: response.name,
-    quantity: response.quantity,
-    protein: response.protein,
-    fat: response.fat,
-    carb: response.carb,
+    name: response.name || "",
+    quantity: response.quantity || "",
+    protein: response.protein || "",
+    fat: response.fat || "",
+    carb: response.carb || "",
   };
 }
