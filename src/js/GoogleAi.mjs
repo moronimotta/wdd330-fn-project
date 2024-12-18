@@ -27,7 +27,7 @@ export async function promptSender(input_text, type) {
       // Parse the sanitized JSON string
       jsonResponse = JSON.parse(text);
     } catch (parseError) {
-      throw new Error(`Failed to parse JSON: ${parseError.message}`);
+      throw new Error(`Failed to parse JSON: ${parseerror.error}`);
     }
 
     // Format the parsed response
@@ -37,7 +37,7 @@ export async function promptSender(input_text, type) {
     return formattedResponse;
   } catch (error) {
     console.error("Error in promptSender:", error);
-    alert(`An error occurred: ${error.message}`);
+    alert(`An error occurred: ${error.error}`);
     return null;
   }
 }
@@ -51,14 +51,6 @@ function promptType(input_text, type) {
 `;
     case "nutrition":
       return `Provide the nutritional facts for ${input_text}. Structure the response strictly in JSON with this format: {name, quantity, protein, fat, carb}. Even if the input could vary, select one representative JSON example.`;
-    case "macronutrient":
-      return `You are a fitness and nutrition assistant. Based on the following inputs: height, age, gender, weight, and goal (either "cutting" or "bulking"), calculate the macronutrient distribution (proteins, carbs, fats) needed to achieve the goal. Always provide the output in this exact JSON format:
-          {
-            "proteins": <value_in_grams>,
-            "carbs": <value_in_grams>,
-            "fats": <value_in_grams>
-          }. 
-          Here's the user input: ${input_text}`;
     default:
       throw new Error("Invalid prompt type. Supported types are: recipe, nutrition, macronutrient.");
   }
@@ -71,9 +63,7 @@ function formatResponse(type, response) {
       return formatRecipe(response);
     case "nutrition":
       return formatNutritionFacts(response);
-    case "macronutrient":
-      return formatMacronutrientNeeds(response);
-    default:
+   default:
       return response;
   }
 }
@@ -97,13 +87,5 @@ function formatNutritionFacts(response) {
     protein: response.protein,
     fat: response.fat,
     carb: response.carb,
-  };
-}
-
-function formatMacronutrientNeeds(response) {
-  return {
-    proteins: response.proteins,
-    carbs: response.carbs,
-    fats: response.fats,
   };
 }

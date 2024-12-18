@@ -122,7 +122,7 @@ function renderResponse(type, data) {
       <p><strong>Fats:</strong> ${data.fats}</p>
       <p><strong>Carbs:</strong> ${data.carbs}</p>
       <p><strong>Proteins:</strong> ${data.proteins}</p>
-      <p><strong>Preparation:</strong> ${data.preparation}</p>
+      <p><strong>Preparation:</strong> ${data.preparation_text}</p>
     `;
   } else if (type === "nutrition") {
     responseDiv.innerHTML = `

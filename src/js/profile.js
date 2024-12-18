@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     const user = getLocalStorage("userAccount");
-    const profile = new Profile(user.name, user.last_name, user.email, user.id);
+    const profile = new Profile(user.name, user.email );
 
     await profile.init();
 

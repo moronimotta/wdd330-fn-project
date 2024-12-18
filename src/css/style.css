@@ -94,6 +94,26 @@ main .content {
   justify-items: center;
 }
 
+.notes-details textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #556678;
+  border-radius: 5px;
+  background-color: #1C2026;
+  color: white;
+  resize: vertical; /* Allow vertical resizing */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.3s ease;
+}
+
+.notes-details textarea:focus {
+  border-color: #00B021;
+  outline: none;
+}
+
+
 #app-button {
   display: flex;
   flex-direction: column;

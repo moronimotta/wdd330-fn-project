@@ -1,57 +1,51 @@
 import { setLocalStorage } from "./utils.mjs";
 import getLocalStorage from "./utils.mjs";
-import { promptSender } from "./GoogleAi.mjs";
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
-
 export default class Profile {
-    constructor(name, lastName, email, password, id) {
+    constructor(name, email) {
         this.name = name;
-        this.lastName = lastName;
         this.email = email;
-        this.password = password;
-        this.id = id;
-
     }
 
     async init() {
-        const userAccount = getLocalStorage("userAccount");
         const submitNoteBtn = document.getElementById("note-add");
         const submitProfileBtn = document.getElementById("profile-submit");
 
-        submitProfileBtn.addEventListener("click", this.submitForm);
-        submitNoteBtn.addEventListener("click", this.addNote);
+        submitProfileBtn.addEventListener("click", () => this.submitForm());
+        submitNoteBtn.addEventListener("click", () => this.submitForm());
+ 
+        const userAccount = await this.getData(this.email);
 
-        this.fillInputs(userAccount);
+        this.fillInputs(userAccount.user);
 
-        try {
-            const url = `${baseURL}/meal-plans/user/${this.id}`;
-            const response = await fetch(url, {
-                method: "GET",
-            });
+        // try {
+        //     const url = `${baseURL}/meal-plans/user/${this.id}`;
+        //     const response = await fetch(url, {
+        //         method: "GET",
+        //     });
 
-            if (response.ok) {
-                // Parse the JSON response
-                const meals = await response.json();
+        //     if (response.ok) {
+        //         // Parse the JSON response
+        //         const meals = await response.json();
 
-                this.nextMeal(meals);
-                console.log("Meals retrieved:", meals);
-            } else {
-                // Handle errors
-                const error = await response.json();
-                console.error("Error fetching meals:", error.message);
-                throw new Error(error.message);
-            }
-        }
-        catch (error) {
-            console.error("Error during login:", error);
-            alert("An unexpected error occurred. Please try again later.");
-        }
+        //         this.nextMeal(meals);
+        //         console.log("Meals retrieved:", meals);
+        //     } else {
+        //         // Handle errors
+        //         const error = await response.json();
+        //         console.error("Error fetching meals:", error.error);
+        //         throw new Error(error.error);
+        //     }
+        // }
+        // catch (error) {
+        //     console.error("Error during login:", error);
+        //     alert("An unexpected error occurred. Please try again later.");
+        // }
     }
 
     async submitForm() {
-
-        const userAccount = getLocalStorage("userAccount");
+        const userAccount = {}
         const nameInput = document.getElementById("name");
         const lastNameInput = document.getElementById("last-name");
         const emailInput = document.getElementById("email");
@@ -60,46 +54,34 @@ export default class Profile {
         const weightInput = document.getElementById("weight");
         const genderInput = document.getElementById("gender");
         const goalInput = document.getElementById("goal");
+        const activityFactor = document.getElementById("activity-factor");
+
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm-password");
+
+        if(passwordInput.value !== "" &&  confirmPasswordInput.value !== "") {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                alert("Passwords do not match.");
+                return;
+            }
+            userAccount.password = passwordInput.value;
+        }
 
         userAccount.name = nameInput.value;
-        userAccount.lastName = lastNameInput.value;
+        userAccount.last_name = lastNameInput.value;
         userAccount.email = emailInput.value;
-        userAccount.age = ageInput.value;
-        userAccount.height = heightInput.value;
-        userAccount.weight = weightInput.value;
+        userAccount.age = parseInt(ageInput.value, 10);
+        userAccount.height = parseFloat(heightInput.value);
+        userAccount.weight = parseFloat(weightInput.value);
         userAccount.goal = goalInput.value;
         userAccount.gender = genderInput.value;
+        userAccount.activity_factor = activityFactor.value;
 
+        const macros = this.calculateMacronutrients(userAccount);
+        userAccount.goal_macro_proteins = parseFloat(macros.proteins);
+        userAccount.goal_macro_carbs = parseFloat(macros.carbs);
+        userAccount.goal_macro_fats = parseFloat(macros.fats);
 
-        if (ageInput.value !== "" || heightInput.value !== "" || weightInput.value !== "" || genderInput.value !== "" || goalInput.value !== "") {
-            this.setMacronutrients(userAccount);
-        } else {
-            await this.updateData(userAccount, userAccount.email);
-        }
-
-    }
-
-    async setMacronutrients(userAccount) {
-        const input_text = {
-            height: userAccount.height,
-            age: userAccount.age,
-            gender: userAccount.gender,
-            weight: userAccount.weight,
-            goal: userAccount.goal
-        }
-
-
-
-        const response = await promptSender(input_text, "macronutrients");
-        userAccount.goalMacroProteins = response.proteins;
-        userAccount.goalMacroCarbs = response.carbs;
-        userAccount.goalMacroFats = response.fats;
-
-        await this.updateData(userAccount, userAccount.email);
-    }
-
-    async addNote() {
-        const userAccount = getLocalStorage("userAccount");
         const notesDiv = document.querySelector(".notes-details");
         const textarea = notesDiv.querySelector("textarea");
         const notes = textarea.value;
@@ -108,192 +90,112 @@ export default class Profile {
         await this.updateData(userAccount, userAccount.email);
     }
 
-    async updateData(userData, email) {
+    async getData(email) {
         try {
-            // Send the POST request to the server
             const url = `${baseURL}/users/${encodeURIComponent(email)}`;
             const response = await fetch(url, {
-                method: "PUT",
+                method: "GET",
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                return user;
+            } else {
+                const error = await response.json();
+                console.error("Error fetching user:", error.error);
+                throw new Error(error.error);
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            alert("An unexpected error occurred. Please try again later.");
+        }
+    }
+
+    async updateData(userData, email) {
+        try {
+            const url = `${baseURL}/users/${encodeURIComponent(email)}`;
+            const response = await fetch(url, {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(userData),
             });
 
+            const result = await response.json();
+
             if (response.ok) {
-                const result = await response.json();
-                alert("Registration successful! Welcome, " + result.firstName);
+                const { user } = result;
 
-                // Save user data to localStorage
-                const userAccount = {
-                    id: result.user.id,
-                    name: result.user.name,
-                    email: result.user.email,
-                    height: result.user.height,
-                    weight: result.user.weight,
-                    age: result.user.age,
-                    goal: result.user.goal,
-                    goalMacroProteins: result.user.goal_macro_proteins,
-                    goalMacroCarbs: result.user.goal_macro_carbs,
-                    goalMacroFats: result.user.goal_macro_fats,
+                if (!user) {
+                    alert("Update failed: Invalid response from server.");
+                    return;
+                }
 
-                };
-
-                setLocalStorage("userAccount", userAccount);
-
+                alert("Update successful!");
                 location.reload();
-
             } else {
-                const error = await response.json();
-                alert("Registration failed: " + error.message);
+                // Handle errors from the server
+                const errorMessage = result.error || "Failed to update user.";
+                alert("Update failed: " + errorMessage);
             }
-
-
         } catch (error) {
-            console.error("Error during registration:", error);
+            console.error("Error during update:", error);
             alert("An unexpected error occurred. Please try again later.");
         }
     }
 
-    nextMeal(mealPlan) {
-        const nextMealSection = document.querySelector(".next-meal-section");
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentDayIndex = now.getDay(); // 0 = Sunday, 6 = Saturday
 
-        // Map day index to mealPlan keys
-        const weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        let currentDay = weekDays[currentDayIndex];
-
-        // Helper to parse time (HH:MM) into hours
-        function parseMealTime(time) {
-            const [hours, minutes] = time.split(":").map(Number);
-            return hours + minutes / 60;
+    calculateMacronutrients(userAccount) {
+        if (!userAccount.weight || !userAccount.height || !userAccount.age || !userAccount.activity_factor) {
+            return { proteins: 0, carbs: 0, fats: 0 };
         }
 
-        // Find next meal for today and beyond
-        let nextMeal = null;
+        const bmr = 10 * userAccount.weight + 6.25 * userAccount.height - 5 * userAccount.age + (userAccount.gender === "male" ? 5 : -161);
+        const maintenanceCalories = bmr * parseFloat(userAccount.activity_factor);
 
-        for (let i = 0; i < 7; i++) {
-            const day = weekDays[(currentDayIndex + i) % 7]; // Rotate through days
-            const meals = mealPlan[day] || [];
-
-            for (const meal of meals) {
-                const mealHour = parseMealTime(meal.time);
-
-                // If on the same day, check for meals later than the current time
-                if (i === 0 && mealHour > currentHour) {
-                    nextMeal = meal;
-                    break;
-                }
-                // If future day, any meal is the next meal
-                if (i > 0) {
-                    nextMeal = meal;
-                    break;
-                }
-            }
-
-            if (nextMeal) break; // Stop looping if a next meal is found
-        }
-
-        // Update the DOM with the next meal info
-        if (nextMeal) {
-            nextMealSection.innerHTML = `
-            <h3>Next Meal: ${nextMeal.name}</h3>
-            <p>Time: ${nextMeal.time}</p>
-            <p>Proteins: ${nextMeal.proteins}g, Carbs: ${nextMeal.carbs}g, Fats: ${nextMeal.fats}g</p>
-          `;
+        let totalCalories;
+        if (userAccount.goal === "cutting") {
+            totalCalories = maintenanceCalories * 0.8;
+        } else if (userAccount.goal === "bulking") {
+            totalCalories = maintenanceCalories * 1.2;
         } else {
-            nextMealSection.innerHTML = `<p>No meals scheduled.</p>`;
-        }
-    }
-
-
-    async getMeals() {
-
-        try {
-            const url = `${baseURL}/meal-plans/user/${this.id}`;
-            const response = await fetch(url, {
-                method: "GET",
-            });
-
-            if (response.ok) {
-                // Parse the JSON response
-                const meals = await response.json();
-                console.log("Meals retrieved:", meals);
-                return meals;
-            } else {
-                // Handle errors
-                const error = await response.json();
-                console.error("Error fetching meals:", error.message);
-                throw new Error(error.message);
-            }
-        } catch (error) {
-            console.error("Error during login:", error);
-            alert("An unexpected error occurred. Please try again later.");
+            totalCalories = maintenanceCalories;
         }
 
+        const proteinPercentage = 0.4;
+        const carbPercentage = 0.35;
+        const fatPercentage = 0.25;
+
+        const proteins = Math.round((totalCalories * proteinPercentage) / 4);
+        const carbs = Math.round((totalCalories * carbPercentage) / 4);
+        const fats = Math.round((totalCalories * fatPercentage) / 9);
+
+        return { proteins, carbs, fats };
     }
 
     fillInputs(userAccount) {
-        const nameInput = document.getElementById("name");
-        nameInput.value = userAccount.name;
-        const lastNameInput = document.getElementById("last-name");
-        lastNameInput.value = userAccount.lastName;
-        const emailInput = document.getElementById("email");
-        emailInput.value = userAccount.email;
-
-        const ageInput = document.getElementById("age");
-        if (userAccount.age > 0) {
-            ageInput.value = userAccount.age;
-        }
-        const heightInput = document.getElementById("height");
-        if (userAccount.height > 0) {
-            heightInput.value = userAccount.height;
-        }
-
-        const weightInput = document.getElementById("weight");
-        if (userAccount.weight > 0) {
-            weightInput.value = userAccount.weight;
-        }
-
-        const genderInput = document.getElementById("gender")
-        if (userAccount.gender !== "") {
-
-            genderInput.value = userAccount.gender;
-        }
+        document.getElementById("name").value = userAccount.name || "";
+        document.getElementById("last-name").value = userAccount.last_name || "";
+        document.getElementById("email").value = userAccount.email || "";
+        document.getElementById("age").value = userAccount.age || "Insert age";
+        document.getElementById("height").value = userAccount.height || "Insert height";
+        document.getElementById("weight").value = userAccount.weight || "Insert weight";
+        document.getElementById("gender").value = userAccount.gender || "Select one"
+        document.getElementById("goal").value = userAccount.goal || "Insert goal";
+        const activityFactorSelect = document.getElementById("activity-factor");
+        activityFactorSelect.value = userAccount.activity_factor || "Insert activity factor";
 
 
-        const goalInput = document.getElementById("goal");
-        if (userAccount.goal !== "") {
-            goalInput.value = userAccount.goal;
-        }
+        let macroDetails = document.getElementsByClassName("macronutrient-details")
+        let p = document.createElement("p");
+        p.innerHTML = `Proteins: ${userAccount.goal_macro_proteins}g, Carbs: ${userAccount.goal_macro_carbs}g, Fats: ${userAccount.goal_macro_fats}g`;
+        macroDetails[0].appendChild(p);
+
 
         const notesDiv = document.querySelector(".notes-details");
         const textarea = document.createElement("textarea");
-        if (userAccount.notes === "") {
-            textarea.value = "Start typing here...";
-        }
-        textarea.value = userAccount.notes;
+        textarea.value = userAccount.notes || "Start typing here...";
         notesDiv.appendChild(textarea);
-
-        if (userAccount.goalMacroProteins === 0 || userAccount.goalMacroCarbs === 0 || userAccount.goalMacroFats === 0) {
-            const macronutrientsDiv = document.querySelector(".macronutrients-details");
-            const p = document.createElement("p");
-            p.textContent = "Please fill the form to get your macronutrients goals";
-            macronutrientsDiv.appendChild(p);
-
-        }
-
-        const text = document.createElement("p");
-        text.textContent = "For your goal, you will need daily:";
-        const carbs = document.createElement("p");
-        carbs.textContent = `Carbohydrates: ${userAccount.goalMacroCarbs}g`;
-        const proteins = document.createElement("p");
-        proteins.textContent = `Proteins: ${userAccount.goalMacroProteins}g`;
-        const fats = document.createElement("p");
-
     }
-
-
 }
